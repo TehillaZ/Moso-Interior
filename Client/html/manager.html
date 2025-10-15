@@ -1,0 +1,264 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Dashboard</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha512-..." crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+body { display: flex; min-height: 100vh; font-family: 'Segoe UI', sans-serif; background-color: #f0f2f5; }
+
+/* Sidebar */
+#sidebar {
+    width: 220px; background: #fff; padding: 20px; border-right: 1px solid #ddd;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.05); display: flex; flex-direction: column;
+}
+#sidebar h4 { margin-bottom: 1.5rem; }
+#sidebar .nav-link { margin-bottom: 0.5rem; color: #555; font-weight: 500; }
+#sidebar .nav-link:hover { background-color: #e6f0ff; color: #1a73e8; border-radius: 8px; padding-left: 10px; }
+
+/* Content */
+#content { flex: 1; padding: 30px; overflow-x: auto; }
+.hidden { display: none; }
+table { width: 100%; border-collapse: collapse; margin-top: 20px; background-color: #fff; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+table th, table td { padding: 12px 15px; text-align: left; }
+table th { background-color: #f5f5f5; font-weight: 600; }
+table tr:nth-child(even) { background-color: #fafafa; }
+table tr:hover { background-color: #e6f0ff; }
+
+
+</style>
+</head>
+<body>
+
+<div id="sidebar">
+  <h4>Dashboard</h4>
+  <ul class="nav flex-column">
+    <li class="nav-item"><a class="nav-link" href="#" onclick="showPage('dashboardPage')">📊 Dashboard</a></li>
+    <li class="nav-item"><a class="nav-link" href="#" onclick="showPage('productList')"><i class="fa-solid fa-tags"></i> Products</a></li>
+    <li class="nav-item"><a class="nav-link" href="#" onclick="showPage('ordersList')"><i class="fa-solid fa-box"></i> Orders</a></li>
+    <li class="nav-item"><a class="nav-link" href="#" onclick="showPage('usersList')"><i class="fa-solid fa-users"></i> Users</a></li>
+  </ul>
+</div>
+
+<div id="content">
+
+  <!-- Dashboard Page -->
+  <div id="dashboardPage">
+    <h2>Sales & Products Overview</h2>
+     <div id="content">
+      <h1 class="mb-4">📊 Dashboard</h1> 
+
+      
+       <div class="row g-4 mb-4">
+        <div class="col-md-4">
+          <div class="card text-center p-3">
+            <h5>Total Orders</h5>
+            <h2 id="totalOrders">0</h2>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card text-center p-3">
+            <h5>Total Revenue</h5>
+            <h2 id="totalRevenue">$0</h2>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card text-center p-3">
+            <h5>Average Order</h5>
+            <h2 id="averageOrder">$0</h2>
+          </div>
+        </div>
+      </div> 
+
+      <!-- Graphs -->
+       <div class="row g-4">
+        <div class="col-md-6">
+          <div class="card p-3">
+            <h5 class="text-center">Sales by Month</h5>
+            <canvas id="barChart"></canvas>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="card p-3">
+            <h5 class="text-center">Orders by Category</h5>
+            <canvas id="pieChart" width="200" height="200"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  </div>
+
+  <!-- Users Table -->
+  <div id="usersList" class="hidden">
+    <h2>Users List</h2>
+    <table id="userTable">
+      <thead><tr><th>FullName</th><th>Password</th><th>Email</th><th>Phone</th><th>Address</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <!-- Orders Table -->
+  <div id="ordersList" class="hidden">
+    <h2>Orders List</h2>
+    <table id="orderTable">
+      <thead><tr><th>OrderId</th><th>UserId</th><th>Qty</th><th>Date</th><th>Status</th><th>ProductsId</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <!-- Products Table -->
+  <div id="productList" class="hidden">
+    <h2>Products List</h2>
+    <table id="productTable">
+      <thead><tr><th>ProductID</th><th>Name</th><th>Price</th><th>Category</th><th>Stock</th><th>Delete</th><th>Update Stock</th><th>Update Price</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <!-- Products Table -->
+<div id="charts" class="hidden">
+<canvas id="horizontalBarChart" width="400" height="300"></canvas>
+</div>
+
+</div>
+
+ <script src="../js/manager.js"></script>
+<script>
+    
+// Switch between pages
+function showPage(pageId) {
+  ['dashboardPage','usersList','ordersList','productList'].forEach(id => {
+    document.getElementById(id).classList.toggle('hidden', id !== pageId);
+  });
+  if(pageId === 'usersList') fetchUsers();
+  if(pageId === 'ordersList') fetchOrders();
+  if(pageId === 'productList') fetchProducts();
+  if(pageId === 'dashboardPage') loadDashboard();
+
+}
+
+// ---- Dashboard ----
+async function loadDashboard() {
+  // Example fetch for categories (replace with your aggregation API)
+  const res = await fetch('http://localhost:3284/order/categories');
+  const data = await res.json();
+
+  const ctx = document.getElementById('categoryPieChart').getContext('2d');
+  const colors = data.categories.map((_,i)=> `hsl(${i*360/data.categories.length},70%,85%)`);
+  new Chart(ctx, {
+    type: 'pie',
+    data: {
+      labels: data.categories,
+      datasets: [{ data: data.categoryData, backgroundColor: colors }]
+    },
+    options: { responsive:true }
+  });
+}
+
+async function fetchUsers() {
+    const res = await fetch("http://localhost:3284/users", {
+  method: 'GET',
+  mode: 'cors',         
+  credentials: 'include'
+})
+    const data = await res.json();
+    console.log('i am in users');
+    console.log(data);
+    
+    const tbody = document.querySelector("#userTable tbody");
+    tbody.innerHTML = '';
+    data.forEach(u => {
+        const row = document.createElement('tr');
+        row.innerHTML = `<td>${u.fullname}</td><td>${u.password}</td><td>${u.email}</td><td>${u.phone}</td><td>${u.address}</td>`;
+        tbody.appendChild(row);
+    });}
+async function fetchOrders() {  const res = await fetch('http://localhost:3284/order', {
+  method: 'GET',
+  mode: 'cors',          
+  credentials: 'include' 
+})
+    const data = await res.json();
+    const tbody = document.querySelector("#orderTable tbody");
+    tbody.innerHTML = '';
+    data.forEach(o => {
+        const row = document.createElement('tr');
+        row.innerHTML = `<td>${o._id}</td><td>${o.email}</td><td> 1 </td><td>${o.orderDate}</td><td>${o.status}</td><td>${o.products.productId}</td>`;
+        tbody.appendChild(row);
+    }); }
+async function fetchProducts() {  const res = await fetch('http://localhost:3284/product', {
+  method: 'GET',
+  mode: 'cors',          
+  credentials: 'include' 
+})
+    const data = await res.json();
+    console.log(data);
+    const tbody = document.querySelector("#productTable tbody");
+    tbody.innerHTML = '';
+    data.forEach(p => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${p._id}</td>
+            <td>${p.name}</td>
+            <td class="price-display">${p.price}</td>
+            <td>${p.category}</td>
+            <td class="stock-display">${p.stock}</td>
+            <td><button class="btn btn-sm btn-outline-danger" onclick="deleteProduct('${p._id}', this)">Delete</button></td>
+            <td><input type="number" min="0" class="form-control form-control-sm" value="${p.stock}" onchange="updateProductStock('${p._id}', this)"></td>
+            <td><input type="number" min="0" step="0.01" class="form-control form-control-sm" value="${p.price}" onchange="updateProductPrice('${p._id}', this)"></td>
+        `;
+        tbody.appendChild(row);
+    }); 
+     
+}
+async function deleteProduct(id, btn) {  await (`http://localhost:3284/product`, {
+        method: 'DELETE',
+        credentials: 'include',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({_id:id})
+    }).then(()=> btn.closest('tr').remove());}
+
+async function updateProductStock(productId, inputElement) {
+  const newStock = Number(inputElement.value);
+  console.log(newStock);
+
+  const res = await fetch(`http://localhost:3284/products/stock`, {
+    method: 'PUT',
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ _id: productId, stock: newStock })
+  });
+
+  const data = await res.json();
+  const row = inputElement.closest('tr');
+  const cell = row.querySelector('.stock-display');
+  if (cell) cell.textContent = data.product.stock;
+}
+
+async function updateProductPrice(productId, input) {
+  const newPrice = parseFloat(input.value);
+
+  const res = await fetch(`http://localhost:3284/products/price/${productId}`, {
+    method: 'PUT',
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ price: newPrice })
+  });
+
+  const data = await res.json();
+  const row = input.closest('tr');
+  const cell = row.querySelector('.price-display');
+  if (cell) cell.textContent = data.product.price;
+}
+
+</script>
+
+</body>
+</html>
+

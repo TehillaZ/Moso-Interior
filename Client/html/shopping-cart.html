@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <meta name="description" content="">
+        <meta name="author" content="Tooplate">
+
+        <title>Moso Interior - Product Listing Page</title>
+
+        <!-- CSS FILES -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+        <link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@100;300;400;600;700&display=swap" rel="stylesheet">
+
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
+
+        <link href="../css/bootstrap-icons.css" rel="stylesheet">
+
+        <link href="../css/owl.carousel.min.css" rel="stylesheet">
+
+        <link href="../css/tooplate-moso-interior.css" rel="stylesheet">
+
+
+    </head>
+    
+    <body class="shop-listing-page">
+
+        <nav class="navbar navbar-expand-lg bg-light fixed-top shadow-lg">
+            <div class="container">
+                <a class="navbar-brand" href="../index.html">Moso <span class="tooplate-red">Inter</span><span class="tooplate-green">ior</span></a>
+
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a class="nav-link click-scroll" href="../index.html#section_1">Home</a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link click-scroll" href="../index.html#section_2">About</a>
+                        </li>
+
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle click-scroll" href="../index.html#section_3" id="navbarLightDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">Shop</a>
+
+                            <ul class="dropdown-menu dropdown-menu-light" aria-labelledby="navbarLightDropdownMenuLink">
+                                <li><a class="dropdown-item active" href="shopping-cart.html">Shopping cart</a></li>
+                  
+                                <li><a class="dropdown-item" href="../index.html">Home</a></li>
+                            </ul>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link click-scroll" href="../index.html#section_4">Reviews</a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link click-scroll" href="../index.html#section_5">Contact</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <main>
+
+            <header class="site-header d-flex justify-content-center align-items-center">
+                <div class="container">
+                    <div class="row">
+
+                        <div class="col-lg-12 col-12">
+                            <h1 class="text-white">Shop Listing</h1>
+                        </div>
+
+                    </div>
+                </div>
+            </header>
+
+
+<section class="py-5" style="background-color: #f8f9fa;">
+  <div class="container">
+    <div class="row">
+      
+
+      <!-- עגלת קניות -->
+      <div class="col-md-7">
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <h2 class="card-title mb-4">Order Summary</h2>
+            
+            <h5 class="mb-3">Shopping Cart</h5>
+            <ul id="cart-items" class="list-group mb-3">
+              <!-- פריטים בעגלה יתווספו כאן דינמית -->
+            </ul>
+            
+            <p id="empty-msg" class="text-muted text-center">Your cart is empty</p>
+
+            <div id="cart-summary" class="mt-4" style="display:none;">
+              <hr>
+              <p class="fw-bold">Total to be paid: <span id="cart-sum"></span></p>
+              <button id="to-payment" class="btn btn-warning w-100 mt-3">המשך לתשלום</button>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  
+
+
+document.addEventListener('DOMContentLoaded', async function() {
+
+
+    
+    // const token = localStorage.getItem('accessToken');
+    // const payload = JSON.parse(atob(token.split('.')[1]));
+    // const userId = payload._id;
+
+    const list = document.getElementById('cart-items');
+    const sumSpan = document.getElementById('cart-sum');
+    const emptyMsg = document.getElementById('empty-msg');
+    const summaryDiv = document.getElementById('cart-summary');
+  
+
+    // Fetch cart from server
+    const res = await fetch(`http://localhost:3284/cart/view`, {
+           credentials : 'include' 
+    }   
+   
+          
+  )
+  
+    let cartProducts = await res.json();
+    console.log('the cart is ' + JSON.stringify(cartProducts, null, 2));
+    // Calculate total sum
+    let total = cartProducts.reduce((acc, item) => {
+        return acc + (item.productId.price * item.quantity);
+    }, 0);
+
+    sumSpan.textContent = "$ " + total.toLocaleString();
+
+    // Toggle empty vs. summary
+    if (cartProducts.length > 0) {
+        emptyMsg.style.display = 'none';
+        summaryDiv.style.display = 'block';
+    } else {
+        emptyMsg.style.display = 'block';
+        summaryDiv.style.display = 'none';
+    }
+
+
+const ul = document.getElementById('cart-items'); // UL שבו יוצגו המוצרים
+ul.innerHTML = ''; // נקה קודם כל
+
+for (const item of cartProducts) {
+    const li = document.createElement('li');
+    li.className = 'list-group-item d-flex align-items-center justify-content-between';
+
+    // אם imageUrl כבר כולל 'uploads/', אל תוסיפי '/uploads/' שוב
+    let imageUrl = item.productId.imageUrl;
+
+    // אם התמונה מתחילה ב 'uploads/', רק תקודדי את שם הקובץ
+    if (imageUrl.startsWith('uploads/')) {
+        const parts = imageUrl.split('/');
+        const fileName = parts.pop(); // שולף את שם הקובץ
+        imageUrl = '/uploads/' + encodeURIComponent(fileName);
+    }
+
+    li.innerHTML = `
+      <img 
+        src="${imageUrl}" 
+        alt="${item.productId.name}" 
+        style="width:100px; height:80px; margin-right:10px;"
+      >
+      <span>
+        ${item.productId.name} 
+        <strong>(${item.productId.price})</strong> × ${item.quantity}
+      </span>
+    `;
+
+    ul.appendChild(li);
+
+
+
+  const removeBtn = document.createElement('button');
+  removeBtn.textContent = 'remove';
+  removeBtn.className = 'btn btn-danger btn-sm';
+
+  removeBtn.onclick = async function() {
+    try {
+      const response = await fetch(`http://localhost:3284/cart/${item.productId._id}`, {
+        method: "DELETE",
+        credentials: 'include'
+      });
+
+      if (!response.ok) {
+        console.error('Failed to remove item:', response.status);
+        return;
+      }
+
+      // עדכון ה־array של העגלה
+      cartProducts = cartProducts.filter(p => p.productId._id !== item.productId._id);
+
+      // הסרת הפריט מה-DOM
+     li.remove();
+
+      // עדכון סכום סופי
+      let total = cartProducts.reduce((acc, item) => acc + (item.productId.price * item.quantity), 0);
+      sumSpan.textContent = "$ " + total.toLocaleString();
+
+      // בדיקה אם העגלה ריקה
+      if (cartProducts.length === 0) {
+        emptyMsg.style.display = 'block';
+        summaryDiv.style.display = 'none';
+      }
+    } catch (err) {
+      console.error('Error removing item:', err);
+    }
+  };
+
+  li.appendChild(removeBtn);
+  list.appendChild(li);}
+})  
+
+const toPaymentBtn = document.getElementById('to-payment');
+toPaymentBtn.addEventListener("click",()=>{
+    window.location.href = "./payment.html"
+})
+
+</script>
