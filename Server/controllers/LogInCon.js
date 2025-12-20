@@ -41,23 +41,23 @@ const LogIn = async (req, res) => {
     await foundUser.save();
 
     // Set refresh token cookie
-      res.cookie('jwt', refreshToken, {
-      httpOnly: true,   
-      sameSite: 'lax', // for HTTPS --  None
-      secure: false,    // for HTTPS --  TRUE
-      maxAge: 10 * 24 * 60 * 60 * 1000,
-    });
-
- 
-    //  לשנות לזה מתי שמעלים לשרת את הפרוייקט
-    //  res.cookie('jwt', refreshToken, {
+    //   res.cookie('jwt', refreshToken, {
     //   httpOnly: true,   
-    //   sameSite: 'None', // for HTTPS --  None
-    //   secure: true,    // for HTTPS --  TRUE
+    //   sameSite: 'lax', // for HTTPS --  None
+    //   secure: false,    // for HTTPS --  TRUE
     //   maxAge: 10 * 24 * 60 * 60 * 1000,
     // });
-    
 
+ 
+    
+     res.cookie('jwt', refreshToken, {
+      httpOnly: true,   
+      sameSite: 'lax', 
+      secure: true,    
+      maxAge: 10 * 24 * 60 * 60 * 1000,
+    });
+    
+ 
     // Respond with minimal user info + access token
     return res.json({
       _id: foundUser._id,
