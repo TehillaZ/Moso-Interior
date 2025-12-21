@@ -12,7 +12,7 @@ let amount = 0;
 // get products list from server
 async function getProducts() {
   try {
-    const response = await fetch('http://localhost:3284/product', {
+    const response = await fetch('https://moso-interior-site.onrender.com/product', {
       method: 'GET',
       credentials: 'include'
     });
@@ -189,7 +189,7 @@ document.getElementById('orderBtn').addEventListener('click', async function(e) 
 
   try {
     for (const item of selectedProducts) {
-      let res = await fetch('http://localhost:3284/cart/add', {
+      let res = await fetch('https://moso-interior-site.onrender.com/cart/add', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         credentials: 'include',
