@@ -96,11 +96,6 @@ app.use('/refresh', refreshRoute);
 const summaryRoutes = require('./routes/api/summary');
 app.use('/api', summaryRoutes);
 
-router.get('/current-user', (req, res) => {
-  if (!req.session.user) return res.status(401).json({ message: 'Not logged in' });
-  res.json(req.session.user);
-});
-
 // PRODUCT MODEL
 const Product = require('./models/productsModel');
 
