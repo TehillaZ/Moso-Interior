@@ -21,63 +21,76 @@ const nodemailer = require("nodemailer");
          }
     };
 
-const CreateNewOrder = async(req, res) => {
+const CreateNewOrder = async (req, res) => {
   try {     
     const { email, products, finalPrice } = req.body;
-        
+
     if (!email || !products || !finalPrice) {
-      return res.status(401).send({ message: "email, products array and finalPrice are required" });
+      return res.status(401).json({
+        message: "email, products array and finalPrice are required"
+      });
     }
 
-
-    const NewOrder = new Order({           
-      email: email,
-      products: products,
-      finalPrice: finalPrice 
+    // 1️⃣ שמירת ההזמנה – זה הדבר הקריטי
+    const NewOrder = new Order({
+      email,
+      products,
+      finalPrice
     });
-        
+
     await NewOrder.save();
 
-    // 📧 send email
- const testAccount = await nodemailer.createTestAccount();
+    // 2️⃣ ניסיון לשלוח מייל (לא קריטי)
+    try {
+      console.log("📨 Trying to send email...");
 
-const transporter = nodemailer.createTransport({
-  host: "smtp.ethereal.email",
-  port: 587,
-  auth: {
-    user: testAccount.user,
-    pass: testAccount.pass
-  }
-});
+      const testAccount = await nodemailer.createTestAccount();
 
-        const now = new Date(); 
-         const formattedTime = now.toLocaleString();
+      const transporter = nodemailer.createTransport({
+        host: "smtp.ethereal.email",
+        port: 587,
+        auth: {
+          user: testAccount.user,
+          pass: testAccount.pass
+        }
+      });
 
-   
-     const info = await transporter.sendMail({
-      from: "no-reply@localhost",
-      to: email,
-      subject: `Order Confirmation `,
-      html: `
-        <h2>Thank you for your order!</h2>
-        <p>Order ID: ${NewOrder._id}</p>
-        <p>Total: $${finalPrice}</p>
-        <p>The order recieved at ${formattedTime}</p>
-        <p>Your order is being pending..</p>
-        <p>For view order enter the site -> Moso Interior - design your Home</p>
-        <p>For cancel order or any other questions conact us with:</p>
-        <p>📞 090-080-0760</p>
-        <p>💻 info@company.com</p>
-      `
-    });
+      const now = new Date();
+      const formattedTime = now.toLocaleString();
 
-   console.log("Preview URL:", nodemailer.getTestMessageUrl(info));
+      const info = await transporter.sendMail({
+        from: "no-reply@moso-interior.com",
+        to: email,
+        subject: "Order Confirmation",
+        html: `
+          <h2>Thank you for your order!</h2>
+          <p>Order ID: ${NewOrder._id}</p>
+          <p>Total: $${finalPrice}</p>
+          <p>The order received at ${formattedTime}</p>
+          <p>Your order is pending confirmation.</p>
+        `
+      });
+
+      console.log("✅ Email sent");
+      console.log("📬 Preview URL:", nodemailer.getTestMessageUrl(info));
+
+    } catch (mailError) {
+      // ⛔ המייל נכשל – אבל ההזמנה נשמרה
+      console.error("❌ EMAIL FAILED");
+      console.error("Reason:", mailError.message);
+    }
+
+    // 3️⃣ תמיד מחזירים הצלחה אם ההזמנה נשמרה
     res.json(NewOrder);
-  } catch (error) { 
-    console.log(error);
-    res.status(500).json({ message: "failed to create new order" });
+
+  } catch (error) {
+    console.error("❌ ORDER FAILED:", error);
+    res.status(500).json({
+      message: "failed to create new order"
+    });
   }
 };
+
 
  const getOrder = async(req, res) => {
 
