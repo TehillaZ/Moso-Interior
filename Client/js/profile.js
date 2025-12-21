@@ -3,7 +3,7 @@
 
   // 1. Load Google user
   try {
-    const userResponse = await fetch('http://localhost:3284/current-user', {
+    const userResponse = await fetch('https://moso-interior-site.onrender.com/current-user', {
       credentials: 'include'
     });
     
@@ -39,7 +39,7 @@ let orders = [];
 
 try {
   // Fetch orders (cookies will be sent automatically because of credentials: 'include')
-  const response = await fetch('http://localhost:3284/order/user-orders', {
+  const response = await fetch('https://moso-interior-site.onrender.com/order/user-orders', {
     method: 'GET',
     headers: { 'Content-Type': 'application/json' },
     credentials: 'include',
