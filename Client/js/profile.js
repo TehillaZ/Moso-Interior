@@ -15,14 +15,14 @@
     
     } else {
       
-      window.location.href = '../index.html';
-      return;
+      //window.location.href = '../index.html';
+      //return;
     }
 }
     catch (err) {
     console.error("Error fetching current user:", err);
-    window.location.href = '../index.html';
-    return;
+    //window.location.href = '../index.html';
+    //return;
   }
 
   // 2. Load orders
