@@ -134,7 +134,7 @@ document.addEventListener('DOMContentLoaded', async function() {
   
 
     // Fetch cart from server
-    const res = await fetch(`http://localhost:3284/cart/view`, {
+    const res = await fetch(`https://moso-interior-site.onrender.com/cart/view`, {
            credentials : 'include' 
     }   
    
@@ -199,7 +199,7 @@ for (const item of cartProducts) {
 
   removeBtn.onclick = async function() {
     try {
-      const response = await fetch(`http://localhost:3284/cart/${item.productId._id}`, {
+      const response = await fetch(`https://moso-interior-site.onrender.com/cart/${item.productId._id}`, {
         method: "DELETE",
         credentials: 'include'
       });
