@@ -4,55 +4,78 @@ const router = express.Router();
 const Order = require('../../models/orderModel');
 
 router.get('/summary', async (req, res) => {
-  try {
-    const orders = await Order.find();
+ try {
+    // Total orders
+    const totalOrders = await Order.countDocuments();
 
-    const totalOrders = orders.length;
-    const totalRevenue = orders.reduce((sum, o) => sum + o.finalPrice, 0);
+    // Total revenue
+    const totalRevenueAgg = await Order.aggregate([
+        {
+            $group: {
+                _id: null,
+                total: { $sum: "$finalPrice" }
+            }
+        }
+    ]);
+    const totalRevenue = totalRevenueAgg[0]?.total || 0;
 
-    // ממוצע הזמנה
-    const averageOrder = totalOrders ? (totalRevenue / totalOrders).toFixed(2) : 0;
+    // Sales by month
+    const monthlySalesAgg = await Order.aggregate([
+        {
+            $group: {
+                _id: { $month: "$orderDate" },
+                total: { $sum: "$finalPrice" }
+            }
+        },
+        { $sort: { "_id": 1 } }
+    ]);
 
-    // חישוב הכנסות לפי חודש
-    const monthlySales = {};
-    const months = [];
+    const months = monthlySalesAgg.map(m => `Month ${m._id}`);
+    const monthlySales = monthlySalesAgg.map(m => m.total);
 
-    orders.forEach(order => {
-      const month = order.createdAt.toLocaleString('default', { month: 'short', year: 'numeric' });
-      if (!monthlySales[month]) monthlySales[month] = 0;
-      monthlySales[month] += order.finalPrice;
-    });
+    // Orders by category
+    const categoriesAgg = await Order.aggregate([
+        { $unwind: "$products" }, // separate each product in orders
+        {
+            $lookup: {
+                from: "products", // your Product collection
+                localField: "products.productId",
+                foreignField: "_id",
+                as: "productInfo"
+            }
+        },
+        { $unwind: "$productInfo" }, // flatten the joined product info
+        {
+            $group: {
+                _id: { $ifNull: ["$productInfo.category", "Uncategorized"] }, // default if no category
+                count: { $sum: 1 } // count products in this category
+            }
+        },
+        { $sort: { _id: 1 } } // optional: sort categories alphabetically
+    ]);
 
-    // סדר החודשים לפי התאריך
-    const sortedMonths = Object.keys(monthlySales).sort((a,b) => new Date(a) - new Date(b));
-    const monthlyRevenue = sortedMonths.map(m => monthlySales[m]);
+    // Now you can use these arrays for your Pie Chart
+    const categories = categoriesAgg.map(c => c._id);
+    const categoryData = categoriesAgg.map(c => c.count);
 
-    // חישוב לפי קטגוריות
-    const categoryData = {};
-    orders.forEach(order => {
-      order.products.forEach(p => {
-        const cat = p.category || 'Unknown';
-        if (!categoryData[cat]) categoryData[cat] = 0;
-        categoryData[cat] += 1;
-      });
-    });
-
-    const categories = Object.keys(categoryData);
-    const categoryCounts = categories.map(cat => categoryData[cat]);
+    console.log(categories, categoryData);
 
     res.json({
-      totalOrders,
-      totalRevenue,
-      averageOrder,
-      months: sortedMonths,
-      monthlySales: monthlyRevenue,
-      categories,
-      categoryData: categoryCounts
+        totalOrders,
+        totalRevenue,
+        months,
+        monthlySales,
+        categories,
+        categoryData
     });
-  } catch (err) {
-    console.error('Error fetching summary:', err);
-    res.status(500).json({ message: 'Server error' });
-  }
-});
+} catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+}
+
+// END MANAGER
+
 
 module.exports = router;
+
+
