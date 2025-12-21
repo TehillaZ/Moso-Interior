@@ -17,12 +17,38 @@ const forgotPassword = async (req, res) => {
   await PasswordResetToken.create({ email, code, expires });
 
   // send email
-  const transporter = nodemailer.createTransport({
-    host: "localhost",
-    port: 1025,
-    ignoreTLS: true
-  });
+  // 2️⃣ ניסיון לשלוח מייל (לא קריטי)
+    try {
+      console.log("📨 Trying to send email...");
 
+      const testAccount = await nodemailer.createTestAccount();
+
+      const transporter = nodemailer.createTransport({
+        host: "smtp.ethereal.email",
+        port: 587,
+        auth: {
+          user: testAccount.user,
+          pass: testAccount.pass
+        }
+      });
+
+      
+
+      const info = await transporter.sendMail({
+      from: "no-reply@localhost",
+      to: email,
+      subject: "Password Reset Code",
+      text: `Your code is: ${code}`
+      });
+      res.json({ message: "Reset code sent to email" });
+      console.log("✅ Email sent");
+      console.log("📬 Preview URL:", nodemailer.getTestMessageUrl(info));
+
+    } catch (mailError) {
+      // ⛔ המייל נכשל – אבל ההזמנה נשמרה
+      console.error("❌ EMAIL FAILED");
+      console.error("Reason:", mailError.message);
+    }
 
   //// send email when the site has domain
   //#region MyRegion
@@ -42,18 +68,18 @@ const forgotPassword = async (req, res) => {
   //#endregion
 
 
-  try {
-    await transporter.sendMail({
-      from: "no-reply@localhost",
-      to: email,
-      subject: "Password Reset Code",
-      text: `Your code is: ${code}`
-    });
-    res.json({ message: "Reset code sent to email" });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Error sending email" });
-  }
+  // try {
+  //   await transporter.sendMail({
+  //     from: "no-reply@localhost",
+  //     to: email,
+  //     subject: "Password Reset Code",
+  //     text: `Your code is: ${code}`
+  //   });
+  //   res.json({ message: "Reset code sent to email" });
+  // } catch (err) {
+  //   console.error(err);
+  //   res.status(500).json({ message: "Error sending email" });
+  // }
 
 
 };
