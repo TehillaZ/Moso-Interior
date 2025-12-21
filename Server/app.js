@@ -93,6 +93,8 @@ const cartRoutes = require("./routes/api/cart");
 app.use("/cart", authenticateToken, cartRoutes);
 const refreshRoute = require('./routes/api/refreshJWT');
 app.use('/refresh', refreshRoute);
+const summaryRoutes = require('./routes/api/summary');
+app.use('/api', summaryRoutes);
 
 // PRODUCT MODEL
 const Product = require('./models/productsModel');
