@@ -5,50 +5,58 @@ const User = require("../models/userModel");
 const PasswordResetToken = require("../models/verifyModel")
 
 const forgotPassword = async (req, res) => {
-  const { email } = req.body;
-  if (!email) return res.status(400).json({ message: "Email required" });
+  console.log("🔥 forgotPassword CALLED");
 
-  await PasswordResetToken.deleteMany({ email });
+  try {
+    const { email } = req.body;
+    if (!email) {
+      console.log("❌ no email");
+      return res.status(400).json({ message: "Email required" });
+    }
 
-  //create new code
-  const code = crypto.randomInt(100000, 999999).toString();
-  const expires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+    console.log("📩 email:", email);
 
-  await PasswordResetToken.create({ email, code, expires });
+    await PasswordResetToken.deleteMany({ email });
+    console.log("🧹 old tokens deleted");
 
-  // send email
-    try {
-      console.log("📨 Trying to send email...");
+    const code = crypto.randomInt(100000, 999999).toString();
+    const expires = new Date(Date.now() + 10 * 60 * 1000);
 
-      const testAccount = await nodemailer.createTestAccount();
+    await PasswordResetToken.create({ email, code, expires });
+    console.log("🔐 reset code saved:", code);
 
-      const transporter = nodemailer.createTransport({
-        host: "smtp.ethereal.email",
-        port: 587,
-        auth: {
-          user: testAccount.user,
-          pass: testAccount.pass
-        }
-      });
+    // MAIL
+    console.log("📨 Trying to send email...");
 
-      
+    const testAccount = await nodemailer.createTestAccount();
 
-      const info = await transporter.sendMail({
-      from: "no-reply@localhost",
+    const transporter = nodemailer.createTransport({
+      host: "smtp.ethereal.email",
+      port: 587,
+      auth: {
+        user: testAccount.user,
+        pass: testAccount.pass
+      }
+    });
+
+    const info = await transporter.sendMail({
+      from: "no-reply@moso-interior.com",
       to: email,
       subject: "Password Reset Code",
       text: `Your code is: ${code}`
-      });
-      res.json({ message: "Reset code sent to email" });
-      console.log("✅ Email sent");
-      console.log("📬 Preview URL:", nodemailer.getTestMessageUrl(info));
+    });
 
-    } catch (mailError) {
-      console.error("❌ EMAIL FAILED");
-      console.error("Reason:", mailError.message);
-    }
+    console.log("✅ Email sent");
+    console.log("📬 Preview URL:", nodemailer.getTestMessageUrl(info));
 
+    return res.json({ message: "Reset code created (check logs for email preview)" });
+
+  } catch (err) {
+    console.error("❌ forgotPassword ERROR:", err);
+    return res.status(500).json({ message: "Server error" });
+  }
 };
+
 
 // reset the password to a new one
 const resetPassword = async (req, res) => {
