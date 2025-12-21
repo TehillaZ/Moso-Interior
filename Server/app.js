@@ -44,7 +44,7 @@ const allowedOrigins = [
   'http://localhost:5501',
   'http://localhost:3284',
   'https://TehillaZ.github.io',
-  'http://localhost:3284/auth/google/callback',
+  'https://moso-interior-site.onrender.com/auth/google/callback',
 ];
 app.use(cors({
   origin: function(origin, callback) {
@@ -131,7 +131,7 @@ app.get('/images', (req, res) => {
 passport.use(new GoogleStrategy({
   clientID: process.env.GOOGLE_CLIENT_ID,
   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-  callbackURL: "http://localhost:3284/auth/google/callback"
+  callbackURL: "https://moso-interior-site.onrender.com/auth/google/callback"
 }, (accessToken, refreshToken, profile, done) => done(null, profile)));
 
 passport.serializeUser((user, done) => done(null, user));
