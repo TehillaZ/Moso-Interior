@@ -58,7 +58,7 @@ document.getElementById('payment-form').addEventListener('submit', async functio
     try {
      
         //  Fetch cart from server
-        const cartRes = await fetch(`http://localhost:3284/cart/view`, {
+        const cartRes = await fetch(`https://moso-interior-site.onrender.com/cart/view`, {
             method: 'GET',
            credentials:"include"
         });
@@ -89,7 +89,7 @@ document.getElementById('payment-form').addEventListener('submit', async functio
         const order = { email, products, finalPrice };
 
         //  Send order to server
-        const orderRes = await fetch('http://localhost:3284/order', {
+        const orderRes = await fetch('https://moso-interior-site.onrender.com/order', {
             method: 'POST',
             headers: { 
                 'Content-Type': 'application/json',
