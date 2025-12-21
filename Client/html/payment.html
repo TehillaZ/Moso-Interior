@@ -15,6 +15,13 @@
         <div class="col-md-6 col-lg-5">
             <div class="card shadow-sm rounded-4 p-4">
                 <h2 class="text-center text-success mb-4">payment form</h2>
+                
+               <!-- Pending message -->
+                <div id="pending-message" class="alert alert-info text-center mb-3" style="display: none;">
+                    Your order is pending confirmation...
+                </div>
+
+                
                 <div class="text-center mb-4 fs-5 fw-bold">
                    total payment :  <span id="total-sum">0</span>
                 </div>
@@ -54,7 +61,10 @@
         
 document.getElementById('payment-form').addEventListener('submit', async function(e) {
     e.preventDefault();
-
+    
+    const pendingDiv = document.getElementById('pending-message');
+    pendingDiv.style.display = 'block';
+    
     try {
      
         //  Fetch cart from server
@@ -102,14 +112,17 @@ document.getElementById('payment-form').addEventListener('submit', async functio
         console.log('Order response:', orderData);
 
         if (orderRes.ok) {
+             pendingDiv.style.display = 'none';
             alert("Payment received, thank you for buying 😃");
             window.location.href = "../index.html";
         } else {
+             pendingDiv.style.display = 'none';
             alert('Saving error, try again');
         }
 
     } catch (err) {
         console.error(err);
+         pendingDiv.style.display = 'none';
         alert('Server error');
     }
 });
