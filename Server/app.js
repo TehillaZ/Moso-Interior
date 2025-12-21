@@ -37,6 +37,7 @@ app.use(cookieParser());
 
 // CORS
 const allowedOrigins = [
+  'https://moso-interior-site.onrender.com',
   'http://127.0.0.1:5500',
   'http://127.0.0.1:5501',
   'http://localhost:3000',
@@ -44,7 +45,6 @@ const allowedOrigins = [
   'http://localhost:5501',
   'http://localhost:3284',
   'https://TehillaZ.github.io',
-  'https://moso-interior-site.onrender.com/auth/google/callback',
 ];
 app.use(cors({
   origin: function(origin, callback) {
