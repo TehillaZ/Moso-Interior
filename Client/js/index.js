@@ -148,7 +148,7 @@ resetBtn.addEventListener("click", async () => {
   else
   {
    try {
-        const res = await fetch("https://moso-interior-site.onrender.com/reset-password", {
+        const res = await fetch("https://moso-interior-site.onrender.com/auth/reset-password", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ email, code, newPassword })
