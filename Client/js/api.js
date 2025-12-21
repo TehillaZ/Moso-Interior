@@ -1,6 +1,6 @@
 export async function refreshAccessToken() {
   try {
-    const response = await fetch('http://localhost:3284/refresh', {
+    const response = await fetch('https://moso-interior-site.onrender.com/refresh', {
       method: 'GET',
       credentials: 'include' 
     });
