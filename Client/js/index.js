@@ -70,7 +70,7 @@ sendBtn.addEventListener("click", async () => {
   document.getElementById("forgot-box").style.display = "none";
   document.getElementById("code-box").style.display = "block";
 
-  const res = await fetch("http://localhost:3284/auth/forgot-password", {
+  const res = await fetch("https://moso-interior-site.onrender.com/auth/forgot-password", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email }),
@@ -95,7 +95,7 @@ verifyBtn.addEventListener("click", async () => {
     errorMsg.style.display = "none";
   
     try {
-        const res = await fetch("http://localhost:3284/auth/verify", {
+        const res = await fetch("https://moso-interior-site.onrender.com/auth/verify", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ email, code })
@@ -148,7 +148,7 @@ resetBtn.addEventListener("click", async () => {
   else
   {
    try {
-        const res = await fetch("http://localhost:3284/auth/reset-password", {
+        const res = await fetch("https://moso-interior-site.onrender.com/reset-password", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ email, code, newPassword })
@@ -188,7 +188,7 @@ resetBtn.addEventListener("click", async () => {
     const user = { fullname, address, phone, email, password };
 
     try {
-      const response = await fetch('http://localhost:3284/users', {
+      const response = await fetch('https://moso-interior-site.onrender.com/users', {
         method: 'POST',
         credentials: 'include' ,
         headers: { 'Content-Type': 'application/json' },
@@ -229,7 +229,7 @@ function scheduleTokenRefresh(accessToken) {
 
 async function getNewAccessToken() {
   try {
-    const response = await fetch('http://localhost:3284/refresh', {
+    const response = await fetch('https://moso-interior-site.onrender.com/refresh', {
       method: 'GET',
       credentials: 'include' 
     });
@@ -259,7 +259,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const password = document.getElementById('password_login').value;
     
       try {
-        const response = await fetch('http://localhost:3284/login', {
+        const response = await fetch('https://moso-interior-site.onrender.com/login', {
           method: 'POST',       
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email, password }),
