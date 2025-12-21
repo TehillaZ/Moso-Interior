@@ -1,7 +1,7 @@
 // Fetch summary data from server
 async function loadDashboard() {
   try {
-    const res = await fetch('https://moso-interior-site.onrender.com/api/summary', {
+    const res = await fetch('https://moso-interior-site.onrender.com/api', {
     method: 'GET',
     credentials: 'include' 
     });
