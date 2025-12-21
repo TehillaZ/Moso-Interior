@@ -43,7 +43,8 @@ const allowedOrigins = [
   'http://localhost:5500',
   'http://localhost:5501',
   'http://localhost:3284',
-  'https://TehillaZ.github.io'
+  'https://TehillaZ.github.io',
+  'http://localhost:3284/auth/google/callback',
 ];
 app.use(cors({
   origin: function(origin, callback) {
