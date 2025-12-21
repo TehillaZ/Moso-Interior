@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
 const passwordInput  = document.getElementById('password');
 const feedback = document.getElementById('password-feedback');
 
-      // Regular expression for the rules
+      /// Regular expression for the rules
       const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{16}$/;
 
       passwordInput.addEventListener('input', () => {
