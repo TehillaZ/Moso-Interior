@@ -28,14 +28,14 @@ const forgotPassword = async (req, res) => {
     // MAIL
     console.log("📨 Trying to send email...");
 
-    const testAccount = await nodemailer.createTestAccount();
+    //const testAccount = await nodemailer.createTestAccount();
 
     const transporter = nodemailer.createTransport({
-      host: "smtp.ethereal.email",
-      port: 587,
+      host: "sandbox.smtp.mailtrap.io",
+      port: 2525,
       auth: {
-        user: testAccount.user,
-        pass: testAccount.pass
+        user: '2ecb826e9e0ab2',
+        pass: 'c5055b89f41a68'
       }
     });
 
