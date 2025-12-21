@@ -136,6 +136,24 @@ passport.use(new GoogleStrategy({
 passport.serializeUser((user, done) => done(null, user));
 passport.deserializeUser((obj, done) => done(null, obj));
 
+app.get('/auth/google',
+  passport.authenticate('google', { scope: ['profile', 'email'] })
+);
+
+app.get('/auth/google/callback',
+  passport.authenticate('google', { failureRedirect: '/' }),
+  (req, res) => {
+
+    res.redirect('/html/profile.html'); 
+  }
+);
+app.get('/logout', (req, res) => {
+  req.logout(err => {
+    if (err) console.error(err);
+    res.redirect('/'); // הפנייה לדף הבית אחרי logout
+  });
+});
+
 // EXAMPLE PAGES
 app.get("/index.html", (req, res) => res.sendFile(path.join(__dirname, "../index.html")));
 app.get("/html/profile.html", (req, res) => res.sendFile(path.join(__dirname, "../Client/html/profile.html")));
