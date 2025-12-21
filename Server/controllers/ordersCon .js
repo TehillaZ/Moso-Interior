@@ -39,17 +39,22 @@ const CreateNewOrder = async(req, res) => {
     await NewOrder.save();
 
     // 📧 send email
-    const transporter = nodemailer.createTransport({
-      host: "localhost",
-      port: 1025,
-      ignoreTLS: true
-    });
+ const testAccount = await nodemailer.createTestAccount();
+
+const transporter = nodemailer.createTransport({
+  host: "smtp.ethereal.email",
+  port: 587,
+  auth: {
+    user: testAccount.user,
+    pass: testAccount.pass
+  }
+});
 
         const now = new Date(); 
          const formattedTime = now.toLocaleString();
 
    
-     await transporter.sendMail({
+     const info = await transporter.sendMail({
       from: "no-reply@localhost",
       to: email,
       subject: `Order Confirmation `,
@@ -66,6 +71,7 @@ const CreateNewOrder = async(req, res) => {
       `
     });
 
+   console.log("Preview URL:", nodemailer.getTestMessageUrl(info));
     res.json(NewOrder);
   } catch (error) { 
     console.log(error);
