@@ -147,7 +147,7 @@ function showPage(pageId) {
 // ---- Dashboard ----
 async function loadDashboard() {
   // Example fetch for categories (replace with your aggregation API)
-  const res = await fetch('http://localhost:3284/order/categories');
+  const res = await fetch('https://moso-interior-site.onrender.com/order/categories');
   const data = await res.json();
 
   const ctx = document.getElementById('categoryPieChart').getContext('2d');
@@ -163,7 +163,7 @@ async function loadDashboard() {
 }
 
 async function fetchUsers() {
-    const res = await fetch("http://localhost:3284/users", {
+    const res = await fetch("https://moso-interior-site.onrender.com/users", {
   method: 'GET',
   mode: 'cors',         
   credentials: 'include'
@@ -179,7 +179,7 @@ async function fetchUsers() {
         row.innerHTML = `<td>${u.fullname}</td><td>${u.password}</td><td>${u.email}</td><td>${u.phone}</td><td>${u.address}</td>`;
         tbody.appendChild(row);
     });}
-async function fetchOrders() {  const res = await fetch('http://localhost:3284/order', {
+async function fetchOrders() {  const res = await fetch('https://moso-interior-site.onrender.com/order', {
   method: 'GET',
   mode: 'cors',          
   credentials: 'include' 
@@ -192,7 +192,7 @@ async function fetchOrders() {  const res = await fetch('http://localhost:3284/o
         row.innerHTML = `<td>${o._id}</td><td>${o.email}</td><td> 1 </td><td>${o.orderDate}</td><td>${o.status}</td><td>${o.products.productId}</td>`;
         tbody.appendChild(row);
     }); }
-async function fetchProducts() {  const res = await fetch('http://localhost:3284/product', {
+async function fetchProducts() {  const res = await fetch('https://moso-interior-site.onrender.com/product', {
   method: 'GET',
   mode: 'cors',          
   credentials: 'include' 
@@ -217,7 +217,7 @@ async function fetchProducts() {  const res = await fetch('http://localhost:3284
     }); 
      
 }
-async function deleteProduct(id, btn) {  await (`http://localhost:3284/product`, {
+async function deleteProduct(id, btn) {  await (`https://moso-interior-site.onrender.com/product`, {
         method: 'DELETE',
         credentials: 'include',
         headers: {'Content-Type':'application/json'},
@@ -228,7 +228,7 @@ async function updateProductStock(productId, inputElement) {
   const newStock = Number(inputElement.value);
   console.log(newStock);
 
-  const res = await fetch(`http://localhost:3284/products/stock`, {
+  const res = await fetch(`https://moso-interior-site.onrender.com/products/stock`, {
     method: 'PUT',
     credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
@@ -244,7 +244,7 @@ async function updateProductStock(productId, inputElement) {
 async function updateProductPrice(productId, input) {
   const newPrice = parseFloat(input.value);
 
-  const res = await fetch(`http://localhost:3284/products/price/${productId}`, {
+  const res = await fetch(`https://moso-interior-site.onrender.com/products/price/${productId}`, {
     method: 'PUT',
     credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
