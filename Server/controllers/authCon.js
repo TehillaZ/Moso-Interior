@@ -17,7 +17,6 @@ const forgotPassword = async (req, res) => {
   await PasswordResetToken.create({ email, code, expires });
 
   // send email
-  // 2️⃣ ניסיון לשלוח מייל (לא קריטי)
     try {
       console.log("📨 Trying to send email...");
 
@@ -45,42 +44,9 @@ const forgotPassword = async (req, res) => {
       console.log("📬 Preview URL:", nodemailer.getTestMessageUrl(info));
 
     } catch (mailError) {
-      // ⛔ המייל נכשל – אבל ההזמנה נשמרה
       console.error("❌ EMAIL FAILED");
       console.error("Reason:", mailError.message);
     }
-
-  //// send email when the site has domain
-  //#region MyRegion
-  // const transporter = nodemailer.createTransport({
-  //   service: "gmail",
-  //   auth: { user: process.env.ADMIN_MAIL, pass: "yourpassword" }
-  // });
-
-  // console.log("good");
-
-  // await transporter.sendMail({
-  //   from: process.env.ADMIN_MAIL,
-  //   to: email,
-  //   subject: "Password Reset Code",
-  //   text: `Your code is: ${code}`
-  // });
-  //#endregion
-
-
-  // try {
-  //   await transporter.sendMail({
-  //     from: "no-reply@localhost",
-  //     to: email,
-  //     subject: "Password Reset Code",
-  //     text: `Your code is: ${code}`
-  //   });
-  //   res.json({ message: "Reset code sent to email" });
-  // } catch (err) {
-  //   console.error(err);
-  //   res.status(500).json({ message: "Error sending email" });
-  // }
-
 
 };
 
