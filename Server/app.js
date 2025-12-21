@@ -217,20 +217,6 @@ app.put('/products/price/:id', async (req, res) => {
         res.status(500).json({ error: 'Failed to update price' });
     }
 });
-try {
-    // Total orders
-    const totalOrders = await Order.countDocuments();
-
-    // Total revenue
-    const totalRevenueAgg = await Order.aggregate([
-        {
-            $group: {
-                _id: null,
-                total: { $sum: "$finalPrice" }
-            }
-        }
-    ]);
-    const totalRevenue = totalRevenueAgg[0]?.total || 0;
 
 // GET THE CURRENT USER FROM COOKIES
 app.get("/current-user", (req, res) => {
