@@ -138,20 +138,26 @@ passport.serializeUser((user, done) => done(null, user));
 passport.deserializeUser((obj, done) => done(null, obj));
 
 app.get('/auth/google',
-  passport.authenticate('google', { scope: ['profile', 'email'] })
+  passport.authenticate('google', { 
+    scope: ['profile', 'email'],
+    prompt: 'select_account' // force Google to ask which account to use
+  })
 );
 
 app.get('/auth/google/callback',
   passport.authenticate('google', { failureRedirect: '/' }),
   (req, res) => {
-
     res.redirect('/html/profile.html'); 
   }
 );
+
 app.get('/logout', (req, res) => {
   req.logout(err => {
     if (err) console.error(err);
-    res.redirect('/'); // הפנייה לדף הבית אחרי logout
+    req.session.destroy(() => {
+      res.clearCookie('connect.sid'); // ensures session cookie is removed
+      res.redirect('/');
+    });
   });
 });
 
