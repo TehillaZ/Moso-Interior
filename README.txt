@@ -1,7 +1,8 @@
 Interior Design Web Application
 
-A full-stack Web Application that lets clients explore interior design portfolios, select services or products, and complete seamless purchases.
-Includes a powerful Admin Dashboard for managing orders, inventory, and customers efficiently.
+A full-stack web application developed independently as part of a self-learning process
+The project was built from scratch to gain hands-on experience in real-world full-stack development, including backend logic, database design, authentication, and client-server communication.
+While Node.js was introduced at a basic level in an academic course, the complete backend architecture, security mechanisms, and production-level features were self-learned and independently implemented in this project.
 
 Goal: Deliver an engaging, intuitive experience for users while providing robust tools for business management.
 
@@ -68,11 +69,22 @@ Email: manager@gmail.com
 Password: 9rG$5nV@2sL#8kWz
 
 ---
+## What I Learned During This Project
 
+- Independent learning and implementation of Node.js, Express.js, and MongoDB
+- Designing RESTful APIs and managing client-server communication
+- Implementing authentication using JWT (access & refresh tokens)
+- Secure password handling with bcrypt and cookies
+- Building an admin dashboard with real business logic
+- Managing async flows, error handling, and edge cases
+- Deploying a full-stack application to a production environment
+
+-----
 Credits
 
 Base HTML/CSS adapted from Tooplate.com.
-Full-stack integration, shopping functionality, authentication, and interactive galleries implemented by me.
+All backend development, full-stack integration, authentication,
+business logic, and interactive functionality were independently implemented by me.
 
 ---
 
