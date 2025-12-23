@@ -1,212 +1,243 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin Dashboard</title>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha512-..." crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Premium Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<style>
-<style>
-body { 
-    display: flex; 
-    min-height: 100vh; 
-    font-family: 'Segoe UI', sans-serif; 
-    background-color: #0f172a; 
-    color: #f8fafc;
-    margin: 0;
-}
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --card-dark: #1e293b;
+            --accent-blue: #38bdf8;
+            --sidebar-width: 240px;
+        }
 
-#sidebar {
-    width: 240px; 
-    background: #1e293b; 
-    padding: 20px; 
-    border-right: 1px solid #334155;
-    box-shadow: 2px 0 10px rgba(0,0,0,0.3); 
-    display: flex; 
-    flex-direction: column;
-    position: fixed;
-    height: 100vh;
-}
+        body {
+            background-color: var(--bg-dark);
+            color: #f8fafc;
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            display: flex;
+            transition: all 0.3s;
+        }
 
-#sidebar h4 { 
-    color: #38bdf8; 
-    font-weight: bold; 
-    margin-bottom: 2rem; 
-    text-transform: uppercase;
-    font-size: 1.1rem;
-}
+        /* Sidebar Styling */
+        #sidebar {
+            width: var(--sidebar-width);
+            background: #1e293b;
+            border-right: 1px solid #334155;
+            height: 100vh;
+            position: fixed;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            overflow: hidden;
+        }
 
-#sidebar .nav-link { 
-    margin-bottom: 0.5rem; 
-    color: #94a3b8; 
-    font-weight: 500; 
-    padding: 10px 15px;
-    border-radius: 10px;
-    transition: 0.3s;
-}
+        #sidebar.collapsed {
+            width: 0;
+            padding: 0;
+            border: none;
+        }
 
-#sidebar .nav-link:hover { 
-    background-color: #38bdf8; 
-    color: #fff; 
-}
+        .sidebar-content {
+            padding: 20px;
+            width: var(--sidebar-width);
+        }
 
-#content { 
-    flex: 1; 
-    padding: 40px; 
-    margin-left: 240px; 
-    overflow-x: auto; 
-}
+        /* Main Content Styling */
+        #content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            padding: 30px;
+            transition: all 0.3s ease;
+            min-width: 0;
+        }
 
-.hidden { display: none; }
+        #content.expanded {
+            margin-left: 0;
+        }
 
+        /* Toggle Button */
+        #toggleBtn {
+            background: var(--accent-blue);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
 
-.card {
-    background-color: #1e293b;
-    border: 1px solid #334155;
-    border-radius: 15px;
-    color: #f8fafc;
-    padding: 20px;
-    margin-bottom: 20px;
-}
+        /* Card & Chart Layout */
+        .card {
+            background-color: var(--card-dark);
+            border: 1px solid #334155;
+            border-radius: 16px;
+            padding: 20px;
+            height: 100%;
+        }
 
-.card h5 { color: #94a3b8; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; }
-.card h2 { font-weight: bold; color: #f8fafc; }
+        /* כותרות לבנות בכרטיסים */
+        .card small, .card h6 {
+            color: #ffffff !important;
+            font-weight: 600;
+            opacity: 0.8;
+        }
 
+         .chart-container {
+            position: relative;
+            margin: auto;
+            height: 300px; /* גובה קבוע שמונע מהגרף לגדול לנצח */
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
 
-.chart-container {
-    position: relative;
-    margin: auto;
-    height: 300px; 
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
+      /* מוודא שהקנבס עצמו לא יחרוג מהדיב אבא שלו */
+      canvas {
+          max-width: 100% !important;
+          max-height: 100% !important;
+      }
 
+        .nav-link {
+            color: #94a3b8;
+            padding: 12px;
+            border-radius: 10px;
+            text-decoration: none;
+            display: block;
+            transition: 0.3s;
+            cursor: pointer;
+        }
 
-canvas {
-    max-width: 100% !important;
-    max-height: 100% !important;
-}
+        .nav-link:hover {
+            background: var(--accent-blue);
+            color: white;
+        }
 
-table { 
-    width: 100%; 
-    border-collapse: separate; 
-    border-spacing: 0;
-    margin-top: 20px; 
-    background-color: #1e293b; 
-    border-radius: 12px; 
-    overflow: hidden;
-    border: 1px solid #334155;
-}
+        h2 { font-weight: 700; margin-bottom: 20px; color: white; }
 
-table th, table td { padding: 15px; text-align: left; border-bottom: 1px solid #334155; }
-table th { background-color: #334155; color: #38bdf8; font-weight: 600; }
-table tr:hover { background-color: #1e293b; filter: brightness(1.2); }
+        .hidden { display: none !important; }
 
-h2 { font-weight: bold; margin-bottom: 25px; }
+        /* Table Styling for Dark Mode */
+        table {
+            width: 100%;
+            background-color: var(--card-dark);
+            border-collapse: separate;
+            border-spacing: 0;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #334155;
+            margin-top: 20px;
+            color: white;
+        }
 
+        table th {
+            background-color: #334155;
+            color: var(--accent-blue);
+            padding: 15px;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+        }
 
+        table td {
+            padding: 15px;
+            border-bottom: 1px solid #334155;
+        }
 
-</style>
+        table tr:hover {
+            background-color: rgba(56, 189, 248, 0.05);
+        }
+    </style>
 </head>
 <body>
 
 <div id="sidebar">
-  <h4>Dashboard</h4>
-  <ul class="nav flex-column">
-    <li class="nav-item"><a class="nav-link" href="#" onclick="showPage('dashboardPage')"> Dashboard</a></li>
-    <li class="nav-item"><a class="nav-link" href="#" onclick="showPage('productList')"><i class="fa-solid fa-tags"></i> Products</a></li>
-    <li class="nav-item"><a class="nav-link" href="#" onclick="showPage('ordersList')"><i class="fa-solid fa-box"></i> Orders</a></li>
-    <li class="nav-item"><a class="nav-link" href="#" onclick="showPage('usersList')"><i class="fa-solid fa-users"></i> Users</a></li>
-  </ul>
+    <div class="sidebar-content">
+        <h4 class="text-info fw-bold mb-4">DASHBOARD</h4>
+        <nav class="nav flex-column">
+            <a class="nav-link" onclick="showPage('dashboardPage')"><i class="fa-solid fa-chart-line me-2"></i> Dashboard</a>
+            <a class="nav-link" onclick="showPage('productList')"><i class="fa-solid fa-tags me-2"></i> Products</a>
+            <a class="nav-link" onclick="showPage('ordersList')"><i class="fa-solid fa-box me-2"></i> Orders</a>
+            <a class="nav-link" onclick="showPage('usersList')"><i class="fa-solid fa-users me-2"></i> Users</a>
+        </nav>
+    </div>
 </div>
 
 <div id="content">
+    <button id="toggleBtn" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
 
-  <!-- Dashboard Page -->
-  <div id="dashboardPage">
-    <h2>Executive Overview</h2>
-     <div id="content">
-      <h1 class="mb-4">Dashboard</h1> 
+    <div id="dashboardPage">
+        <h2 class="mb-4">Executive Overview</h2>
+        
+        <div class="row g-4 mb-4">
+            <div class="col-md-4">
+                <div class="card text-center">
+                    <small>TOTAL ORDERS</small>
+                    <h2 id="totalOrders">17</h2>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-center">
+                    <small>TOTAL REVENUE</small>
+                    <h2 id="totalRevenue">$178,060</h2>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-center">
+                    <small>AVERAGE ORDER</small>
+                    <h2 id="averageOrder">$10,474.12</h2>
+                </div>
+            </div>
+        </div>
 
-      
-       <div class="row g-4 mb-4">
-        <div class="col-md-4">
-          <div class="card text-center p-3">
-            <h5>Total Orders</h5>
-            <h2 id="totalOrders">0</h2>
-          </div>
+        <div class="row g-4">
+            <div class="col-md-7">
+                <div class="card">
+                    <h6 class="text-center">SALES BY MONTH</h6>
+                    <div class="chart-container">
+                        <canvas id="barChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="card">
+                    <h6 class="text-center">ORDERS BY CATEGORY</h6>
+                    <div class="chart-container">
+                        <canvas id="pieChart"></canvas>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="col-md-4">
-          <div class="card text-center p-3">
-            <h5>Total Revenue</h5>
-            <h2 id="totalRevenue">$0</h2>
-          </div>
-        </div>
-        <div class="col-md-4">
-          <div class="card text-center p-3">
-            <h5>Average Order</h5>
-            <h2 id="averageOrder">$0</h2>
-          </div>
-        </div>
-      </div> 
-
-      <!-- Graphs -->
-       <div class="row g-4">
-        <div class="col-md-6">
-          <div class="card p-3">
-            <h5 class="text-center">Sales by Month</h5>
-            <canvas id="barChart"></canvas>
-          </div>
-        </div>
-        <div class="col-md-6">
-          <div class="card p-3">
-            <h5 class="text-center">Orders by Category</h5>
-            <canvas id="pieChart" width="200" height="200"></canvas>
-          </div>
-        </div>
-      </div>
     </div>
-  </div>
 
-  </div>
+    <div id="usersList" class="hidden">
+        <h2>Users List</h2>
+        <table>
+            <thead><tr><th>FullName</th><th>Password</th><th>Email</th><th>Phone</th><th>Address</th></tr></thead>
+            <tbody id="userTableBody"></tbody>
+        </table>
+    </div>
 
-  <!-- Users Table -->
-  <div id="usersList" class="hidden">
-    <h2>Users List</h2>
-    <table id="userTable">
-      <thead><tr><th>FullName</th><th>Password</th><th>Email</th><th>Phone</th><th>Address</th></tr></thead>
-      <tbody></tbody>
-    </table>
-  </div>
+    <div id="ordersList" class="hidden">
+        <h2>Orders List</h2>
+        <table>
+            <thead><tr><th>OrderId</th><th>UserId</th><th>Qty</th><th>Date</th><th>Status</th><th>ProductsId</th></tr></thead>
+            <tbody id="orderTableBody"></tbody>
+        </table>
+    </div>
 
-  <!-- Orders Table -->
-  <div id="ordersList" class="hidden">
-    <h2>Orders List</h2>
-    <table id="orderTable">
-      <thead><tr><th>OrderId</th><th>UserId</th><th>Qty</th><th>Date</th><th>Status</th><th>ProductsId</th></tr></thead>
-      <tbody></tbody>
-    </table>
-  </div>
-
-  <!-- Products Table -->
-  <div id="productList" class="hidden">
-    <h2>Products List</h2>
-    <table id="productTable">
-      <thead><tr><th>ProductID</th><th>Name</th><th>Price</th><th>Category</th><th>Stock</th><th>Delete</th><th>Update Stock</th><th>Update Price</th></tr></thead>
-      <tbody></tbody>
-    </table>
-  </div>
-
-  <!-- Products Table -->
-<div id="charts" class="hidden">
-<canvas id="horizontalBarChart" width="400" height="300"></canvas>
-</div>
+    <div id="productList" class="hidden">
+        <h2>Products List</h2>
+        <table>
+            <thead><tr><th>ID</th><th>Name</th><th>Price</th><th>Category</th><th>Stock</th><th>Delete</th><th>Stock Update</th><th>Price Update</th></tr></thead>
+            <tbody id="productTableBody"></tbody>
+        </table>
+    </div>
 
 </div>
 
