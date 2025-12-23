@@ -123,7 +123,6 @@
 
         .hidden { display: none !important; }
 
-        /* Table Styling for Dark Mode */
         table {
             width: 100%;
             background-color: var(--card-dark);
@@ -133,7 +132,7 @@
             overflow: hidden;
             border: 1px solid #334155;
             margin-top: 20px;
-            color: white;
+            color: white !important; /* מבטיח טקסט לבן בכל הטבלה */
         }
 
         table th {
@@ -147,10 +146,37 @@
         table td {
             padding: 15px;
             border-bottom: 1px solid #334155;
+            color: white !important; /* מבטיח שכל תא יהיה לבן */
+            vertical-align: middle;
         }
 
         table tr:hover {
             background-color: rgba(56, 189, 248, 0.05);
+        }
+
+        /* עיצוב תיבות קלט (Inputs) בתוך הטבלה */
+        table .form-control {
+            background-color: #0f172a !important;
+            color: white !important;
+            border: 1px solid #334155 !important;
+            text-align: center;
+        }
+
+        /* עיצוב כפתור מחיקה (אייקון פח) */
+        .btn-outline-danger {
+            color: #f87171;
+            border-color: #f87171;
+        }
+
+        .btn-outline-danger:hover {
+            background-color: #f87171;
+            color: white;
+        }
+
+        /* צבע מודגש למחיר */
+        .price-display {
+            color: var(--accent-blue) !important;
+            font-weight: bold;
         }
     </style>
 </head>
@@ -244,129 +270,202 @@
  <script src="../js/manager.js"></script>
 <script>
     
-// Switch between pages
+    function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const content = document.getElementById('content');
+    sidebar.classList.toggle('collapsed');
+    content.classList.toggle('expanded');
+}
+// משתנים גלובליים לשמירת האובייקטים של הגרפים (מונע כפילויות)
+let barChartInstance = null;
+let pieChartInstance = null;
+
+// פונקציית ניווט בין דפים
 function showPage(pageId) {
-  ['dashboardPage','usersList','ordersList','productList'].forEach(id => {
-    document.getElementById(id).classList.toggle('hidden', id !== pageId);
-  });
-  if(pageId === 'usersList') fetchUsers();
-  if(pageId === 'ordersList') fetchOrders();
-  if(pageId === 'productList') fetchProducts();
-  if(pageId === 'dashboardPage') loadDashboard();
+    const pages = ['dashboardPage', 'usersList', 'ordersList', 'productList'];
+    pages.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.toggle('hidden', id !== pageId);
+    });
 
+    // קריאה לפונקציות טעינת נתונים לפי הדף הנבחר
+    if (pageId === 'usersList') fetchUsers();
+    if (pageId === 'ordersList') fetchOrders();
+    if (pageId === 'productList') fetchProducts();
+    if (pageId === 'dashboardPage') loadDashboard();
 }
 
-// ---- Dashboard ----
+// ---- Dashboard & Charts ----
 async function loadDashboard() {
-  // Example fetch for categories (replace with your aggregation API)
-  const res = await fetch('https://moso-interior-site.onrender.com/order/categories');
-  const data = await res.json();
+    try {
+        const res = await fetch('https://moso-interior-site.onrender.com/api/summary', {
+            method: 'GET',
+            credentials: 'include'
+        });
+        const data = await res.json();
 
-  const ctx = document.getElementById('categoryPieChart').getContext('2d');
-  const colors = data.categories.map((_,i)=> `hsl(${i*360/data.categories.length},70%,85%)`);
-  new Chart(ctx, {
-    type: 'pie',
-    data: {
-      labels: data.categories,
-      datasets: [{ data: data.categoryData, backgroundColor: colors }]
-    },
-    options: { responsive:true }
-  });
+        // עדכון כרטיסי סיכום
+        document.getElementById('totalOrders').textContent = data.totalOrders || 0;
+        document.getElementById('totalRevenue').textContent = `$${data.totalRevenue || 0}`;
+        const avg = data.totalOrders > 0 ? (data.totalRevenue / data.totalOrders).toFixed(2) : 0;
+        document.getElementById('averageOrder').textContent = `$${avg}`;
+
+        // 1. Bar Chart - Monthly Revenue
+        const barCtx = document.getElementById('barChart').getContext('2d');
+        if (barChartInstance) barChartInstance.destroy(); // ניקוי גרף קודם
+        
+        barChartInstance = new Chart(barCtx, {
+            type: 'bar',
+            data: {
+                labels: data.months,
+                datasets: [{
+                    label: 'Monthly Revenue ($)',
+                    data: data.monthlySales,
+                    backgroundColor: '#38bdf8',
+                    borderRadius: 5
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: { beginAtZero: true, grid: { color: '#334155' }, ticks: { color: '#94a3b8' } },
+                    x: { grid: { display: false }, ticks: { color: '#94a3b8' } }
+                },
+                plugins: { legend: { display: false } }
+            }
+        });
+
+        // 2. Pie Chart - Orders by Category
+        const pieCtx = document.getElementById('pieChart').getContext('2d');
+        if (pieChartInstance) pieChartInstance.destroy(); // ניקוי גרף קודם
+
+        const colors = data.categories.map((_, i) => `hsl(${i * (360 / data.categories.length)}, 65%, 70%)`);
+
+        pieChartInstance = new Chart(pieCtx, {
+            type: 'pie',
+            data: {
+                labels: data.categories,
+                datasets: [{
+                    data: data.categoryData,
+                    backgroundColor: colors,
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { color: '#94a3b8', padding: 20, font: { size: 12 } }
+                    }
+                }
+            }
+        });
+
+    } catch (err) {
+        console.error('Error loading dashboard:', err);
+    }
 }
+
+// ---- Fetch Data Tables ----
 
 async function fetchUsers() {
-    const res = await fetch("https://moso-interior-site.onrender.com/users", {
-  method: 'GET',
-  mode: 'cors',         
-  credentials: 'include'
-})
+    const res = await fetch("https://moso-interior-site.onrender.com/users", { credentials: 'include' });
     const data = await res.json();
-   
-    
-    const tbody = document.querySelector("#userTable tbody");
+    const tbody = document.querySelector("#usersList table tbody"); // סלקטור מדויק לפי המבנה החדש
     tbody.innerHTML = '';
     data.forEach(u => {
         const row = document.createElement('tr');
-        row.innerHTML = `<td>${u.fullname}</td><td>${u.password}</td><td>${u.email}</td><td>${u.phone}</td><td>${u.address}</td>`;
+        row.innerHTML = `<td>${u.fullname}</td><td>••••••</td><td>${u.email}</td><td>${u.phone}</td><td>${u.address}</td>`;
         tbody.appendChild(row);
-    });}
-async function fetchOrders() {  const res = await fetch('https://moso-interior-site.onrender.com/order', {
-  method: 'GET',
-  mode: 'cors',          
-  credentials: 'include' 
-})
+    });
+}
+
+async function fetchOrders() {
+    const res = await fetch('https://moso-interior-site.onrender.com/order', { credentials: 'include' });
     const data = await res.json();
-    const tbody = document.querySelector("#orderTable tbody");
+    const tbody = document.querySelector("#ordersList table tbody");
     tbody.innerHTML = '';
     data.forEach(o => {
         const row = document.createElement('tr');
-        row.innerHTML = `<td>${o._id}</td><td>${o.email}</td><td> 1 </td><td>${o.orderDate}</td><td>${o.status}</td><td>${o.products.productId}</td>`;
+        // שימי לב: וודאי שהשדות תואמים ל-DB שלך (למשל o.orderDate או o.createdAt)
+        row.innerHTML = `<td>${o._id}</td><td>${o.email}</td><td>1</td><td>${new Date(o.orderDate).toLocaleDateString()}</td><td><span class="badge bg-success">${o.status}</span></td><td>${o.products?.productId || 'N/A'}</td>`;
         tbody.appendChild(row);
-    }); }
-async function fetchProducts() {  const res = await fetch('https://moso-interior-site.onrender.com/product', {
-  method: 'GET',
-  mode: 'cors',          
-  credentials: 'include' 
-})
+    });
+}
+
+async function fetchProducts() {
+    const res = await fetch('https://moso-interior-site.onrender.com/product', { credentials: 'include' });
     const data = await res.json();
-   
-    const tbody = document.querySelector("#productTable tbody");
+    const tbody = document.querySelector("#productList table tbody");
     tbody.innerHTML = '';
     data.forEach(p => {
         const row = document.createElement('tr');
         row.innerHTML = `
             <td>${p._id}</td>
             <td>${p.name}</td>
-            <td class="price-display">${p.price}</td>
-            <td>${p.category}</td>
+            <td class="price-display text-info fw-bold">$${p.price}</td> <td>${p.category}</td>
             <td class="stock-display">${p.stock}</td>
-            <td><button class="btn btn-sm btn-outline-danger" onclick="deleteProduct('${p._id}', this)">Delete</button></td>
-            <td><input type="number" min="0" class="form-control form-control-sm" value="${p.stock}" onchange="updateProductStock('${p._id}', this)"></td>
-            <td><input type="number" min="0" step="0.01" class="form-control form-control-sm" value="${p.price}" onchange="updateProductPrice('${p._id}', this)"></td>
+            <td>
+                <button class="btn btn-sm btn-outline-danger" onclick="deleteProduct('${p._id}', this)">
+                    <i class="fa-solid fa-trash"></i>
+                </button>
+            </td>
+            <td>
+                <input type="number" class="form-control form-control-sm" 
+                       value="${p.stock}" onchange="updateProductStock('${p._id}', this)" style="width: 70px;">
+            </td>
+            <td>
+                <input type="number" step="0.01" class="form-control form-control-sm" 
+                       value="${p.price}" onchange="updateProductPrice('${p._id}', this)" style="width: 90px;">
+            </td>
         `;
         tbody.appendChild(row);
-    }); 
-     
+    });
 }
-async function deleteProduct(id, btn) {  await (`https://moso-interior-site.onrender.com/product`, {
+
+async function updateProductStock(productId, inputElement) {
+    const newStock = Number(inputElement.value);
+    try {
+        const res = await fetch(`https://moso-interior-site.onrender.com/products/stock`, {
+            method: 'PUT',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ _id: productId, stock: newStock })
+        });
+        if (res.ok) {
+            console.log("Stock updated successfully");
+            // אופציונלי: להוסיף אנימציה ירוקה קצרה לאינפוט
+        }
+    } catch (err) { console.error("Error updating stock:", err); }
+}
+
+async function updateProductPrice(productId, inputElement) {
+    const newPrice = parseFloat(inputElement.value);
+    try {
+        const res = await fetch(`https://moso-interior-site.onrender.com/products/price/${productId}`, {
+            method: 'PUT',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ price: newPrice })
+        });
+        if (res.ok) console.log("Price updated successfully");
+    } catch (err) { console.error("Error updating price:", err); }
+}
+async function deleteProduct(id, btn) {
+    if(!confirm("Are you sure?")) return;
+    await fetch(`https://moso-interior-site.onrender.com/product`, {
         method: 'DELETE',
         credentials: 'include',
         headers: {'Content-Type':'application/json'},
         body: JSON.stringify({_id:id})
-    }).then(()=> btn.closest('tr').remove());}
-
-async function updateProductStock(productId, inputElement) {
-  const newStock = Number(inputElement.value);
-
-
-  const res = await fetch(`https://moso-interior-site.onrender.com/products/stock`, {
-    method: 'PUT',
-    credentials: 'include',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ _id: productId, stock: newStock })
-  });
-
-  const data = await res.json();
-  const row = inputElement.closest('tr');
-  const cell = row.querySelector('.stock-display');
-  if (cell) cell.textContent = data.product.stock;
+    }).then(() => btn.closest('tr').remove());
 }
 
-async function updateProductPrice(productId, input) {
-  const newPrice = parseFloat(input.value);
-
-  const res = await fetch(`https://moso-interior-site.onrender.com/products/price/${productId}`, {
-    method: 'PUT',
-    credentials: 'include',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ price: newPrice })
-  });
-
-  const data = await res.json();
-  const row = input.closest('tr');
-  const cell = row.querySelector('.price-display');
-  if (cell) cell.textContent = data.product.price;
-}
+// הפעלה ראשונית
+loadDashboard();
 
 </script>
 
