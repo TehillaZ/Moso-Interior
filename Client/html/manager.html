@@ -474,7 +474,11 @@ async function updateProductPrice(productId, inputElement) {
 }
 
 async function deleteProduct(id, btn) {
-    if(!confirm("Are you sure?")) return;
+    const code = prompt("Enter delete code:");
+    if (code !== process.env.DELETE_SECRET) {
+        alert("Wrong code. Delete canceled.");
+        return;
+    }
     await fetch(`https://moso-interior-site.onrender.com/product`, {
         method: 'DELETE',
         credentials: 'include',
