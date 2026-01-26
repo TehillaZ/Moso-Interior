@@ -87,7 +87,7 @@ const authRoutes = require("./routes/api/auth");
 app.use("/auth", authRoutes);
 app.use('/users', require('./routes/api/users'));
 app.use('/order', authenticateToken, require('./routes/api/orders'));
-app.use('/product', authenticateToken, require('./routes/api/product'));
+app.use('/product',  require('./routes/api/product'));
 app.use('/login', require('./routes/api/logIn'));
 const cartRoutes = require("./routes/api/cart");
 app.use("/cart", authenticateToken, cartRoutes);
