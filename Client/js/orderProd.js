@@ -68,7 +68,11 @@ function renderProducts(page) {
             </p>
           </div>
           <div class="shop-btn-wrap">
-            <a href="shop-detail.html" class="shop-btn custom-btn btn d-flex align-items-center">Learn more</a>
+            <a href="#" 
+               class="add-to-cart-btn shop-btn custom-btn btn d-flex align-items-center"
+               data-product-id="${product._id}">
+               Add to cart
+            </a>
           </div>
         </div>
         <div class="shop-body">
@@ -78,15 +82,19 @@ function renderProducts(page) {
     productsContainer.appendChild(col);
   });
 
- 
   document.querySelectorAll('.add-to-cart-icon').forEach(icon => {
     icon.addEventListener('click', toggleCart);
+  });
+
+  document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
+    btn.addEventListener('click', toggleCart);
   });
 
   updatePagination(page);
   updateCartSummary();
   updateSelectedProductIds();
 }
+
 
 // toggle cart 
 function toggleCart(event) {
