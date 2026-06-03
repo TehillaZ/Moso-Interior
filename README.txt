@@ -1,96 +1,61 @@
-Interior Design Web Application
+# 📐 Interior Design & E-Commerce Web Application
 
-A full-stack web application developed independently as part of a self-learning process
-The project was built from scratch to gain hands-on experience in real-world full-stack development, including backend logic, database design, authentication, and client-server communication.
-While Node.js was introduced at a basic level in an academic course, the complete backend architecture, security mechanisms, and production-level features were self-learned and independently implemented in this project.
+[![Live Demo](https://img.shields.io/badge/Demo-Live%20Site-Gradient?style=for-the-badge&logo=render&logoColor=white)](https://moso-interior-site.onrender.com/)
 
-Goal: Deliver an engaging, intuitive experience for users while providing robust tools for business management.
+A production-ready, full-stack web application built from scratch to deliver an engaging user portfolio experience combined with a robust, secure e-commerce and business management system. 
 
-[Visit the site](https://moso-interior-site.onrender.com/)
+> 💡 **Self-Learning Milestone:** While Node.js was only introduced at a basic level in my academic studies, the entire backend architecture, advanced security mechanisms, database design, and admin workflows in this project were completely self-learned and independently implemented.
 
 ---
 
-Key Features
-Frontend (Client-Side)
+## 🚀 Key Features
 
-Design Gallery – Interactive portfolio showcasing kitchens, bedrooms, and other spaces.
-Color selection updates furniture visuals dynamically.
-Before & after images for design transformations.
-User Account – Registration and login with secure password storage.
-Shopping System
-Browse, select, and add products to the Cart.
-Checkout with credit card payments.
-Automatic email notifications after orders.
-Personal Dashboard
-View order history with detailed product info.
-Reset password via a secure email verification code stored in the database.
+### 💻 Client-Side Experience (Frontend)
+* **Interactive Design Gallery:** A dynamic portfolio showcasing kitchens, bedrooms, and living spaces. Features interactive color selection that updates furniture visuals in real-time, alongside "Before & After" sliders for design transformations.
+* **Full Shopping & Checkout System:** Users can browse products, manage their shopping cart, and simulate secure credit card checkouts.
+* **Automated Notifications:** Instant email confirmations are dispatched upon successful order placements.
+* **Personalized User Dashboard:** Secure registration and login, order history tracking with detailed invoices, and a robust password-reset flow utilizing time-sensitive verification codes.
 
----
+### 🛡️ Core Architecture & Security (Backend)
+* **RESTful API Architecture:** Powered by **Node.js** and **Express.js** to handle complex async data flows, client-server communication, and structured error handling.
+* **Session Management & Auth:** Secure authentication utilizing **JWT (Access & Refresh Tokens)** paired with **HttpOnly Cookies** for persistent, tamper-proof sessions.
+* **Data Protection:** Industry-standard password hashing via **bcrypt**.
 
-Backend (Server-Side)
-
-Node.js & Express.js – Robust server and API framework.
-MongoDB – Store users, products, orders, and transactions.
-Security & Authentication
-JWT (Access & Refresh Tokens) for session management.
-Cookies for persistent sessions.
-bcrypt for password hashing.
----
-
-Admin Dashboard
-
-Secure Admin Access – Admin-only login.
-Product Management
-View, update price, and manage inventory.
-Delete products if needed.
-Order Management
-View all orders with sorting/filtering by month.
-Customer Management
-Access customer details and order history.
-Analytics & Insights
-Charts by product category.
-Monthly sales and stock analysis.
+### 📊 Business Management (Admin Dashboard)
+* **Role-Based Access Control:** Strict admin-only route protection.
+* **Inventory Control:** Full CRUD operations allowing admins to monitor stock levels, update pricing, and delete products dynamically.
+* **Order & Customer Tracking:** Advanced order ledger with multi-attribute filtering (e.g., sorting by month) linked to detailed customer purchase histories.
+* **Analytics & Insights:** Live data visualization showing sales charts by product category and monthly revenue analysis.
 
 ---
 
-Technologies Used
+## 🛠️ Tech Stack
 
-Frontend: HTML, CSS, JavaScript
-Backend: Node.js, Express.js
-Database: MongoDB
-Security: JWT, bcrypt, Cookies
-Other Tools: Local Storage, Email API, HTTPS (production)
+| Frontend | Backend | Database & Security |
+| :--- | :--- | :--- |
+| • HTML5 & CSS3<br>• JavaScript (ES6+)<br>• Local Storage | • Node.js<br>• Express.js<br>• REST APIs | • MongoDB<br>• JSON Web Tokens (JWT)<br>• Bcrypt Hashing |
 
 ---
 
-Admin Demo Access
-
-Email: manager@gmail.com
-Password: 9rG$5nV@2sL#8kWz
-
----
-## What I Learned During This Project
-
-- Independent learning and implementation of Node.js, Express.js, and MongoDB
-- Designing RESTful APIs and managing client-server communication
-- Implementing authentication using JWT (access & refresh tokens)
-- Secure password handling with bcrypt and cookies
-- Building an admin dashboard with real business logic
-- Managing async flows, error handling, and edge cases
-- Deploying a full-stack application to a production environment
-
------
-Credits
-
-Base HTML/CSS adapted from Tooplate.com.
-All backend development, full-stack integration, authentication,
-business logic, and interactive functionality were independently implemented by me.
+## 🔐 Admin Demo Credentials
+To explore the administrative features, analytics, and management tools, log in with the following credentials:
+* **Email:** `manager@gmail.com`
+* **Password:** `MANAGERmanager12`
 
 ---
 
-License
-This project is for educational and portfolio purposes.
-Adaptable for personal or commercial use following Tooplate’s usage policy.
+## 🧠 Key Takeaways & Learning Outcomes
+* Architected complete RESTful APIs and optimized asynchronous flows.
+* Gained deep practical understanding of **Token-Based Authentication** and cookie-based state management.
+* Implemented production-level security patterns (hashing, route guarding, input handling).
+* Designed a relational-like data model within a NoSQL database (**MongoDB**).
+* Successfully managed end-to-end deployment to a live production cloud environment.
 
+---
+
+## 📝 Credits & License
+* **UI Layout:** Base HTML/CSS templates adapted from [Tooplate](https://www.tooplate.com/).
+* **Core Engineering:** All backend architecture, full-stack integration, business logic, analytics pipelines, and security layers were independently developed by me.
+* *This project was developed for educational and portfolio purposes.*
 
 
