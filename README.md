@@ -1,10 +1,6 @@
 #  Interior Design & E-Commerce Web Application
 <img width="800" height="379" alt="2026-06-03231346-ezgif com-optimize" src="https://github.com/user-attachments/assets/8c42e9d0-7e9f-4eb1-b54f-45c467d8cbc4" />
 
-
-
-
-
 [![Live Demo](https://img.shields.io/badge/Demo-Live%20Site-Gradient?style=for-the-badge&logo=render&logoColor=white)](https://moso-interior-site.onrender.com/)
 
 A production-ready, full-stack web application built from scratch to deliver an engaging user portfolio experience combined with a robust, secure e-commerce and business management system. 
