@@ -1,4 +1,4 @@
-# 📐 Interior Design & E-Commerce Web Application
+#  Interior Design & E-Commerce Web Application
 
 [![Live Demo](https://img.shields.io/badge/Demo-Live%20Site-Gradient?style=for-the-badge&logo=render&logoColor=white)](https://moso-interior-site.onrender.com/)
 
